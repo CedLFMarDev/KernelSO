@@ -1,17 +1,21 @@
-    global loader                   ; the entry symbol for ELF ; 
+    global loader                   ; o símbolo de entrada para o formato ELF 
 
-    MAGIC_NUMBER equ 0x1BADB002     ; define the magic number constant
-    FLAGS        equ 0x0            ; multiboot flags
-    CHECKSUM     equ -MAGIC_NUMBER  ; calculate the checksum
-                                    ; (magic number + checksum + flags should equal 0)
+    MAGIC_NUMBER equ 0x1BADB002     ; define a constante do número mágico (magic number)
+    FLAGS        equ 0x0            ; flags do multiboot
+    CHECKSUM     equ -MAGIC_NUMBER  ; calcula o checksum
+                                    ; (número mágico + checksum + flags devem somar 0)
 
-    section .text:                  ; start of the text (code) section
-    align 4                         ; the code must be 4 byte aligned
-        dd MAGIC_NUMBER             ; write the magic number to the machine code,
-        dd FLAGS                    ; the flags,
-        dd CHECKSUM                 ; and the checksum
+    section .text:                  ; início da seção de texto (código)
+    align 4                         ; o código deve ser alinhado em 4 bytes
+        dd MAGIC_NUMBER             ; escreve o número mágico no código de máquina,
+        dd FLAGS                    ; as flags,
+        dd CHECKSUM                 ; e o checksum
 
-    loader:                         ; the loader label (defined as entry point in linker script)
-        mov eax, 0xCAFEBABE         ; place the number 0xCAFEBABE in the register eax
+    loader:                         ; o rótulo do loader (definido como ponto de entrada no script de linkagem)
+        mov eax, 0xCAFEBABE         ; coloca o número 0xCAFEBABE no registrador eax
     .loop:
-        jmp .loop                   ; loop forever
+        jmp .loop                   ; loop infinito
+
+
+; nasm -f elf32 loader.s 
+; para compilar em um arquivo ELF 32 bits
