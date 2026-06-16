@@ -25,5 +25,5 @@ SECTIONS {
     }
 }
 
-; ld -T link.ld -melf_i386 loader.o -o kernel.elf
-; chama o linker do GNU para juntar os arquivos e criar o executável
+/* ld -T link.ld -melf_i386 loader.o -o kernel.elf */
+/* chama o linker do GNU para juntar os arquivos e criar o executável */
