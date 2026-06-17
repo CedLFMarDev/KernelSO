@@ -1,0 +1,28 @@
+RESUMO DO CÓDIGO: Loader / Kernel Stub Mínimo (Padrão Multiboot)
+
+Este código é o ponto de partida ("boot") para um sistema operacional próprio.
+O objetivo principal dele é ser reconhecido pelo bootloader (como o GRUB) e
+preparar o processador para rodar o restante do seu sistema.
+
+O que ele faz, passo a passo:
+
+1. Cria o Cabeçalho Multiboot:
+   Define uma assinatura mágica (0x1BADB002), flags e um checksum. O GRUB procura
+   exatamente por esses dados nos primeiros 8KB do arquivo para garantir que 
+   o arquivo é um kernel válido e pode ser carregado na memória.
+
+2. Define o Ponto de Entrada (loader):
+   Exporta o rótulo 'loader' globalmente para que o linkador saiba exatamente 
+   por onde a execução do código deve começar.
+
+3. Executa uma Ação de Teste:
+   Move o valor hexadecimal 0xCAFEBABE para o registrador EAX. Isso serve como uma
+   assinatura visual simples. Se você rodar o kernel no QEMU e inspecionar os
+   registradores da CPU, verá esse valor lá, provando que o boot funcionou.
+
+4. Trava a CPU em Segurança:
+   Entra em um loop infinito (jmp .loop). Como não há um sistema operacional rodando
+   por trás para fechar o programa, o processador precisa ser "preso" ali, caso 
+   contrário ele continuaria lendo lixo da memória e reiniciaria a máquina.
+
+
