@@ -16,6 +16,11 @@
     .loop:
         jmp .loop                   ; loop infinito
 
+section .bss                        ;Adicionar a reserva de pilha (kernel_stack) na seção .bss.
+align 4                             ;Apontar esp para essa pilha.
+kernel_stack:                       ;Trocar o jmp .loop direto por uma chamada a kmain antes do loop.
+    resb KERNEL_STACK_SIZE
+                                    ;Sem isso, kmain.c nunca seria executado
 
 ; nasm -f elf32 loader.s 
 ; para compilar em um arquivo ELF 32 bits
