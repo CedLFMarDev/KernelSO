@@ -1,28 +1,29 @@
 #include "io.h"
-
-/* Endereço da memória de vídeo VGA (text mode 80x25) */
-#define VGA_MEMORY 0xB8000
+#include "serial.h"
+#include "framebuffer.h"
 
 /* Função principal do kernel */
 void kmain(void) {
-    /* Ponteiro para a memória de vídeo */
-    char *vga = (char *)VGA_MEMORY;
-    
-    /* Mensagem a ser exibida */
-    const char *msg = "Hello from Kernel!";
-    
-    /* Índice para percorrer a mensagem */
-    int i = 0;
-    
-    /* Escreve a mensagem na memória de vídeo */
-    while (msg[i] != '\0') {
-        vga[i * 2] = msg[i];           /* Caractere */
-        vga[i * 2 + 1] = 0x07;         /* Atributo: branco em fundo preto */
-        i++;
-    }
-    
-    /* Loop infinito para manter o kernel rodando */
-    while (1) {
-        /* O kernel fica aqui */
-    }
+    /* inicializa serial para debug */
+    serial_init();
+    serial_write("Kernel: serial inicializada\n");
+
+    /* Se você tem o endereço do framebuffer do bootloader, passe-o aqui.
+     * Exemplo (substitua pelos valores reais do bootloader/GRUB):
+     * framebuffer_init((void*)0xE0000000, 640, 480, 640*4, 32);
+     *
+     * Por enquanto inicializamos com addr == NULL: driver ficará desabilitado
+     * até você passar o endereço real.
+     */
+    framebuffer_init(NULL, 0, 0, 0, 0);
+
+    /* imprime via serial e tenta limpar framebuffer (fallback para serial) */
+    serial_write("Kernel: inicializando framebuffer (exemplo)\n");
+    fb_clear(0xFF000000); /* preto (ARGB) */
+
+    /* exemplo: escreve mensagem na serial e framebuffer (se houver) */
+    serial_write("Hello from Kernel (serial)\n");
+    fb_write_string(10, 10, "Hello from kernel (fb)", 0xFFFFFFFF); /* branco */
+
+    for (;;) { __asm__ volatile ("hlt"); }
 }
