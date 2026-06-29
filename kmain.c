@@ -1,13 +1,6 @@
 #include "io.h"
-
-/* Declarações das funções de framebuffer e serial */
-extern void fb_clear(unsigned char fg, unsigned char bg);
-extern unsigned int fb_write(const char *buf, unsigned int len, unsigned char fg, unsigned char bg);
-extern unsigned int fb_write_at(const char *buf, unsigned int len, unsigned int pos,
-                                unsigned char fg, unsigned char bg);
-extern void serial_init(void);
-extern void serial_write(const char *str, size_t max_len);
-extern void serial_write_no_limit(const char *str);
+#include "framebuffer.h"
+#include "serial.h"
 
 /* Definições de cores */
 #define FB_COLOR_WHITE       0x0F

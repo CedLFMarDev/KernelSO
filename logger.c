@@ -1,6 +1,6 @@
 #include "logger.h"
-#include "iso/boot/framebuffer.h"
-#include "iso/boot/serial.h"
+#include "framebuffer.h"
+#include "serial.h"
 
 /* Nível de log global */
 int log_level = LOG_LEVEL_DEBUG;
