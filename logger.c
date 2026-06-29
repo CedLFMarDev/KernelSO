@@ -1,6 +1,7 @@
 #include "logger.h"
 #include "framebuffer.h"
 #include "serial.h"
+#include <stddef.h>
 
 /* Nível de log global */
 int log_level = LOG_LEVEL_DEBUG;

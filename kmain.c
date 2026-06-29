@@ -2,11 +2,6 @@
 #include "framebuffer.h"
 #include "serial.h"
 
-/* Definições de cores */
-#define FB_COLOR_WHITE       0x0F
-#define FB_COLOR_BLACK       0x00
-#define FB_COLOR_LIGHT_GREEN 0x0A
-#define FB_COLOR_RED         0x04
 
 /** kmain:
  *  Ponto de entrada principal do kernel.
