@@ -5,13 +5,13 @@ AS = nasm
 LD = i386-elf-ld
 GRUB_MKRESCUE = grub-mkrescue
 
-# Flags de compilação
-CFLAGS = -ffreestanding -fno-builtin -Wall -Wextra -O2
+# Flags de compilação melhoradas
+CFLAGS = -ffreestanding -fno-builtin -Wall -Wextra -O2 -g -fstack-protector-strong
 ASFLAGS = -f elf32
 LDFLAGS = -T link.ld -melf_i386
 
-# Arquivos de origem
-C_SOURCES = kmain.c
+# Arquivos de origem - CORRIGIDO: Adicionados serial.c e framebuffer.c
+C_SOURCES = kmain.c iso/boot/serial.c iso/boot/framebuffer.c
 ASM_SOURCES = loader.s io.s
 C_OBJECTS = $(C_SOURCES:.c=.o)
 ASM_OBJECTS = $(ASM_SOURCES:.s=.o)
@@ -22,7 +22,13 @@ KERNEL = kernel.elf
 ISO = os.iso
 
 # Alvo padrão
-all: $(KERNEL)
+all: check-tools $(KERNEL)
+
+# Verificar se as ferramentas necessárias estão instaladas
+check-tools:
+	@command -v $(CC) >/dev/null 2>&1 || { echo "❌ $(CC) não encontrado"; exit 1; }
+	@command -v $(AS) >/dev/null 2>&1 || { echo "❌ $(AS) não encontrado"; exit 1; }
+	@command -v $(LD) >/dev/null 2>&1 || { echo "❌ $(LD) não encontrado"; exit 1; }
 
 # Compilar arquivos C
 %.o: %.c
@@ -47,6 +53,10 @@ iso: $(KERNEL)
 	$(GRUB_MKRESCUE) -o $(ISO) iso/
 	@echo "✓ ISO bootável criado: $(ISO)"
 
+# Compilação paralela para faster builds
+build: check-tools
+	$(MAKE) -j4 $(KERNEL)
+
 # Limpar arquivos compilados
 clean:
 	rm -f $(OBJECTS) $(KERNEL)
@@ -62,8 +72,10 @@ distclean: clean
 info:
 	@echo "=== Makefile do Kernel SO ==="
 	@echo "Alvo padrão (make all): Compila o kernel"
+	@echo "make build: Compila com paralelização (-j4)"
 	@echo "make iso: Cria ISO bootável"
 	@echo "make clean: Remove arquivos compilados"
 	@echo "make distclean: Remove tudo incluindo ISO"
+	@echo "make check-tools: Verifica se as ferramentas estão instaladas"
 
-.PHONY: all iso clean distclean info
+.PHONY: all build iso clean distclean info check-tools
