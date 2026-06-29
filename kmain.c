@@ -11,7 +11,7 @@ extern void serial_write_no_limit(const char *str);
 
 /* Definições de cores */
 #define FB_COLOR_WHITE       0x0F
-#define FB_COLOR_BLACK       0x00
+#define FB_COLOR_BLUE       0x00
 #define FB_COLOR_LIGHT_GREEN 0x0A
 #define FB_COLOR_RED         0x04
 
@@ -30,19 +30,19 @@ void kmain(void) {
     
     /* Mensagem de boas-vindas */
     const char *welcome = "Welcome to KernelSO!";
-    fb_write(welcome, 21, FB_COLOR_LIGHT_GREEN, FB_COLOR_BLACK);
+    fb_write(welcome, 21, FB_COLOR_LIGHT_GREEN, FB_COLOR_BLUE);
     serial_write(welcome, 21);
     serial_write_no_limit("\n");
     
     /* Segunda linha com informações */
     const char *info = "Kernel v1.0 - x86 i386";
-    fb_write_at(info, 23, 80, FB_COLOR_WHITE, FB_COLOR_BLACK);  /* Próxima linha */
+    fb_write_at(info, 23, 80, FB_COLOR_WHITE, FB_COLOR_BLUE);  /* Próxima linha */
     serial_write(info, 23);
     serial_write_no_limit("\n");
     
     /* Mensagem de status */
     const char *status = "Running...";
-    fb_write_at(status, 10, 160, FB_COLOR_LIGHT_GREEN, FB_COLOR_BLACK);  /* 3ª linha */
+    fb_write_at(status, 10, 160, FB_COLOR_LIGHT_GREEN, FB_COLOR_BLUE);  /* 3ª linha */
     serial_write(status, 10);
     serial_write_no_limit("\n");
     
