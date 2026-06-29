@@ -25,7 +25,7 @@ void kmain(void) {
     serial_write_no_limit("=== Kernel iniciando ===\n");
     
     /* Limpar a tela com fundo preto e texto branco */
-    fb_clear(FB_COLOR_WHITE, FB_COLOR_BLACK);
+    fb_clear(FB_COLOR_WHITE, FB_COLOR_BLUE);
     serial_write_no_limit("Tela limpa\n");
     
     /* Mensagem de boas-vindas */
