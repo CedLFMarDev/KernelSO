@@ -186,3 +186,92 @@ char fb_get_cell(unsigned int i) {
     }
     return fb[i * 2];
 }
+
+/** fb_write_string_at_xy:
+ *  Escreve uma string em coordenadas X,Y.
+ *
+ *  @param x   Coluna inicial (0 a 79)
+ *  @param y   Linha inicial (0 a 24)
+ *  @param str String a ser escrita
+ *  @param len Número máximo de caracteres a escrever
+ *  @param fg  Cor do foreground
+ *  @param bg  Cor do background
+ *  @return    Número de caracteres realmente escritos
+ */
+unsigned int fb_write_string_at_xy(unsigned int x, unsigned int y, const char *str,
+                                    unsigned int len, unsigned char fg, unsigned char bg) {
+    if (!str || len == 0 || x >= FB_WIDTH || y >= FB_HEIGHT) {
+        return 0;
+    }
+    
+    unsigned int pos = y * FB_WIDTH + x;
+    return fb_write_at(str, len, pos, fg, bg);
+}
+
+/** fb_fill_line:
+ *  Preenche uma linha inteira com um caractere específico.
+ *
+ *  @param y  Número da linha (0 a 24)
+ *  @param c  Caractere a preencher
+ *  @param fg Cor do foreground
+ *  @param bg Cor do background
+ */
+void fb_fill_line(unsigned int y, char c, unsigned char fg, unsigned char bg) {
+    if (y >= FB_HEIGHT) {
+        return;
+    }
+    
+    unsigned int start = y * FB_WIDTH;
+    unsigned int end = start + FB_WIDTH;
+    
+    for (unsigned int i = start; i < end; i++) {
+        fb_write_cell(i, c, fg, bg);
+    }
+}
+
+/** fb_fill_area:
+ *  Preenche uma área retangular com um caractere específico.
+ *
+ *  @param x1 Coluna inicial
+ *  @param y1 Linha inicial
+ *  @param x2 Coluna final (exclusiva)
+ *  @param y2 Linha final (exclusiva)
+ *  @param c  Caractere a preencher
+ *  @param fg Cor do foreground
+ *  @param bg Cor do background
+ */
+void fb_fill_area(unsigned int x1, unsigned int y1, unsigned int x2, unsigned int y2,
+                  char c, unsigned char fg, unsigned char bg) {
+    if (x1 >= FB_WIDTH || y1 >= FB_HEIGHT || x2 > FB_WIDTH || y2 > FB_HEIGHT) {
+        return;
+    }
+    
+    for (unsigned int y = y1; y < y2; y++) {
+        for (unsigned int x = x1; x < x2; x++) {
+            unsigned int pos = y * FB_WIDTH + x;
+            fb_write_cell(pos, c, fg, bg);
+        }
+    }
+}
+
+/** fb_scroll_up:
+ *  Faz scroll da tela para cima (remove primeira linha, adiciona branco no final).
+ *  NOVO: Função útil para implementar logging no kernel.
+ *
+ *  @param fg Cor do foreground para a nova linha
+ *  @param bg Cor do background para a nova linha
+ */
+void fb_scroll_up(unsigned char fg, unsigned char bg) {
+    /* Mover todas as linhas uma para cima */
+    for (unsigned int i = 0; i < FB_SIZE - FB_WIDTH; i++) {
+        fb[i * 2]     = fb[(i + FB_WIDTH) * 2];
+        fb[i * 2 + 1] = fb[(i + FB_WIDTH) * 2 + 1];
+    }
+    
+    /* Limpar a última linha */
+    for (unsigned int i = FB_SIZE - FB_WIDTH; i < FB_SIZE; i++) {
+        fb_write_cell(i, ' ', fg, bg);
+    }
+    
+    fb_move_cursor(FB_SIZE - FB_WIDTH);
+}
