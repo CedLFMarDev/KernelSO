@@ -147,7 +147,7 @@ void kfatal(const char *msg) {
     for (int i = 0; i < 5; i++) {
         fb_fill_area(0, 1, FB_WIDTH, FB_HEIGHT, ' ', FB_COLOR_RED, FB_COLOR_RED);
         for (volatile int j = 0; j < 100000; j++);
-        fb_clear(FB_COLOR_WHITE, FB_COLOR_BLACK);
+        fb_clear(FB_COLOR_WHITE, FB_COLOR_BLUE);
         for (volatile int j = 0; j < 100000; j++);
     }
     
