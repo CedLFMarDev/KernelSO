@@ -10,8 +10,8 @@ CFLAGS = -ffreestanding -fno-builtin -Wall -Wextra -O2 -g -fstack-protector-stro
 ASFLAGS = -f elf32
 LDFLAGS = -T link.ld -melf_i386
 
-# Arquivos de origem - CORRIGIDO: Adicionados serial.c e framebuffer.c
-C_SOURCES = kmain.c iso/boot/serial.c iso/boot/framebuffer.c
+# Arquivos de origem - ATUALIZADO: Adicionados logger.c, serial.c e framebuffer.c
+C_SOURCES = kmain.c logger.c iso/boot/serial.c iso/boot/framebuffer.c
 ASM_SOURCES = loader.s io.s
 C_OBJECTS = $(C_SOURCES:.c=.o)
 ASM_OBJECTS = $(ASM_SOURCES:.s=.o)
