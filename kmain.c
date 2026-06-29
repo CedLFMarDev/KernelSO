@@ -11,7 +11,7 @@ extern void serial_write_no_limit(const char *str);
 
 /* Definições de cores */
 #define FB_COLOR_WHITE       0x0F
-#define FB_COLOR_BLUE       0x00
+#define FB_COLOR_BLUE       0x01
 #define FB_COLOR_LIGHT_GREEN 0x0A
 #define FB_COLOR_RED         0x04
 
@@ -24,7 +24,7 @@ void kmain(void) {
     serial_init();
     serial_write_no_limit("=== Kernel iniciando ===\n");
     
-    /* Limpar a tela com fundo preto e texto branco */
+    /* Limpar a tela com fundo azul e texto branco */
     fb_clear(FB_COLOR_WHITE, FB_COLOR_BLUE);
     serial_write_no_limit("Tela limpa\n");
     
