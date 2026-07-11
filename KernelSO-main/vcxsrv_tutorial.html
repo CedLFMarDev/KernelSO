@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Como Abrir VcXsrv - Tutorial</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 2.5em;
+        }
+        
+        .step {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            border-radius: 5px;
+        }
+        
+        .step-number {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 35px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .step h2 {
+            color: #333;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .step p {
+            color: #666;
+            margin-bottom: 10px;
+            margin-left: 45px;
+            line-height: 1.6;
+        }
+        
+        .instruction {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-left: 45px;
+            color: #004085;
+            border: 1px solid #b8daff;
+        }
+        
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+            color: #856404;
+        }
+        
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 30px;
+            text-align: center;
+        }
+        
+        .terminal {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin-left: 45px;
+            overflow-x: auto;
+            font-size: 0.9em;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #999;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Como Abrir VcXsrv</h1>
+        
+        <div class="step">
+            <h2><span class="step-number">1</span> Clique no Menu Iniciar</h2>
+            <p>Procure o <span class="highlight">Menu Iniciar</span> do Windows no canto inferior esquerdo da tela.</p>
+            <div class="instruction">
+                💡 Dica: Você pode também pressionar a tecla <span class="highlight">⊞ Windows</span> no seu teclado
+            </div>
+        </div>
+        
+        <div class="step">
+            <h2><span class="step-number">2</span> Procure por "XLaunch"</h2>
+            <p>Digite <span class="highlight">XLaunch</span> na caixa de busca que aparece.</p>
+            <div class="instruction">
+                🔍 A caixa de busca aparece automaticamente quando você abre o Menu Iniciar
+            </div>
+        </div>
+        
+        <div class="step">
+            <h2><span class="step-number">3</span> Clique no Resultado</h2>
+            <p>Procure por <span class="highlight">XLaunch</span> nos resultados de busca e clique nele.</p>
+            <div class="instruction">
+                ✅ O ícone é geralmente uma janela com uma logo de servidor X
+            </div>
+        </div>
+        
+        <div class="step">
+            <h2><span class="step-number">4</span> Configure XLaunch</h2>
+            <p>Uma janela de configuração vai abrir. Siga as opções abaixo:</p>
+            <div class="instruction">
+                📋 <strong>Página 1:</strong><br>
+                • Selecione: <span class="highlight">Multiple windows</span><br>
+                • Click: <span class="highlight">Next</span><br><br>
+                📋 <strong>Página 2:</strong><br>
+                • Deixe como padrão (Display number: -1)<br>
+                • Click: <span class="highlight">Next</span><br><br>
+                📋 <strong>Página 3:</strong><br>
+                • Deixe todas as opções padrão<br>
+                • Click: <span class="highlight">Next</span><br><br>
+                📋 <strong>Página 4:</strong><br>
+                • Marque: <span class="highlight">✓ Disable access control</span><br>
+                • Click: <span class="highlight">Finish</span>
+            </div>
+        </div>
+        
+        <div class="step">
+            <h2><span class="step-number">5</span> Abra o Terminal PowerShell</h2>
+            <p>Procure por <span class="highlight">PowerShell</span> no Menu Iniciar e clique nele.</p>
+        </div>
+        
+        <div class="step">
+            <h2><span class="step-number">6</span> Execute o Kernel</h2>
+            <p>No terminal, copie e cole o comando abaixo:</p>
+            <div class="terminal">wsl -d Ubuntu -u root -- bash -lc "cd /mnt/c/Users/marco/Downloads/KernelSO-main/KernelSO-main && DISPLAY=:0 make run"</div>
+        </div>
+        
+        <div class="success">
+            ✨ <strong>Pronto!</strong><br>
+            A janela do QEMU com seu kernel deve abrir com o texto em <span class="highlight">VERDE</span> sobre fundo <span class="highlight">AZUL</span>!
+        </div>
+        
+        <div class="footer">
+            💚 Kernel SO - Tutorial VcXsrv para Windows + WSL
+        </div>
+    </div>
+</body>
+</html>
