@@ -1,9 +1,10 @@
-    global loader                   ; o símbolo de entrada para o formato ELF 
-    extern kmain                    ; declara kmain como símbolo externo
+global loader                   ; o símbolo de entrada para o formato ELF 
+extern kmain                    ; declara kmain como símbolo externo
 
-    MAGIC_NUMBER equ 0x1BADB002    ; define a constante do número mágico (magic number)
-    FLAGS        equ 0x0           ; flags do multiboot
-    CHECKSUM     equ -MAGIC_NUMBER ; calcula o checksum
+    MAGIC_NUMBER    equ 0x1BADB002  ; define a constante do número mágico (magic number)
+    ALIGN_MODULES   equ 0x00000001  ; instrui o GRUB a alinhar módulos em páginas
+    FLAGS           equ ALIGN_MODULES
+    CHECKSUM        equ -(MAGIC_NUMBER + ALIGN_MODULES) ; calcula o checksum
                                     ; (número mágico + checksum + flags devem somar 0)
     KERNEL_STACK_SIZE equ 4096     ; tamanho da pilha do kernel (4 KB)
 
@@ -16,6 +17,8 @@
     loader:                         ; o rótulo do loader (definido como ponto de entrada no script de linkagem)
         mov esp, kernel_stack_top   ; configura o ponteiro da pilha (esp) para o topo da pilha do kernel
         
+        push ebx                    ; passa o ponteiro multiboot como argumento para kmain
+
         ; Chama a função kmain do kernel
         call kmain                  ; chama a função principal do kernel (kmain)
     
