@@ -2,6 +2,7 @@
 #include "interrupt.h"
 #include "pic.h"
 #include "multiboot.h"
+#include <stddef.h>
 
 /* Declarações das funções de framebuffer e serial */
 extern void fb_clear(unsigned char fg, unsigned char bg);

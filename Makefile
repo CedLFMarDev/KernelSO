@@ -6,13 +6,13 @@ LD = i386-elf-ld
 GRUB_MKRESCUE = grub-mkrescue
 
 # Flags de compilação melhoradas
-CFLAGS = -ffreestanding -fno-builtin -Wall -Wextra -O2 -g -fstack-protector-strong
+CFLAGS = -ffreestanding -fno-builtin -Wall -Wextra -O2 -g -fno-stack-protector
 ASFLAGS = -f elf32
 LDFLAGS = -T link.ld -melf_i386
 
-# Arquivos de origem - ATUALIZADO: Adicionados logger.c, serial.c e framebuffer.c
-C_SOURCES = kmain.c logger.c iso/boot/serial.c iso/boot/framebuffer.c
-ASM_SOURCES = loader.s io.s
+# Arquivos de origem - ATUALIZADO: Capítulo 6-7 (interrupts, PIC, keyboard, program)
+C_SOURCES = kmain.c interrupt.c pic.c keyboard.c framebuffer.c serial.c
+ASM_SOURCES = loader.s io.s interrupt_handlers.s program.s
 C_OBJECTS = $(C_SOURCES:.c=.o)
 ASM_OBJECTS = $(ASM_SOURCES:.s=.o)
 OBJECTS = $(ASM_OBJECTS) $(C_OBJECTS)
@@ -57,6 +57,16 @@ iso: $(KERNEL)
 build: check-tools
 	$(MAKE) -j4 $(KERNEL)
 
+# Executar o kernel no QEMU com o módulo program.o
+run: $(KERNEL) program.o
+	@echo "🚀 Iniciando QEMU..."
+	qemu-system-i386 -kernel $(KERNEL) -initrd program.o -serial stdio
+
+# Executar a partir da ISO
+run-iso: iso
+	@echo "🚀 Iniciando QEMU com ISO..."
+	qemu-system-i386 -cdrom $(ISO) -serial stdio
+
 # Limpar arquivos compilados
 clean:
 	rm -f $(OBJECTS) $(KERNEL)
@@ -73,9 +83,11 @@ info:
 	@echo "=== Makefile do Kernel SO ==="
 	@echo "Alvo padrão (make all): Compila o kernel"
 	@echo "make build: Compila com paralelização (-j4)"
+	@echo "make run: Executa o kernel no QEMU"
 	@echo "make iso: Cria ISO bootável"
+	@echo "make run-iso: Executa a ISO no QEMU"
 	@echo "make clean: Remove arquivos compilados"
 	@echo "make distclean: Remove tudo incluindo ISO"
 	@echo "make check-tools: Verifica se as ferramentas estão instaladas"
 
-.PHONY: all build iso clean distclean info check-tools
+.PHONY: all build iso run run-iso clean distclean info check-tools

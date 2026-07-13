@@ -1,5 +1,5 @@
 section .text
-%macro no_error_code_interrupt_handler %1
+%macro no_error_code_interrupt_handler 1
 global interrupt_handler_%1
 interrupt_handler_%1:
     push dword 0        ; erro artificial
@@ -7,7 +7,7 @@ interrupt_handler_%1:
     jmp common_interrupt_handler
 %endmacro
 
-%macro error_code_interrupt_handler %1
+%macro error_code_interrupt_handler 1
 global interrupt_handler_%1
 interrupt_handler_%1:
     push dword %1       ; número da interrupção (erro já foi empilhado pela CPU)
