@@ -18,21 +18,27 @@ extern interrupt_handler
 
 global common_interrupt_handler
 common_interrupt_handler:
-    push edx
-    push ecx
-    push ebx
+    ; salvar registradores
     push eax
-    push esp            ; passa ponteiro para cpu_state como argumento
+    push ebx
+    push ecx
+    push edx
 
+    ; pegar o número da interrupção da pilha
+    ; layout: [esp]=edx, [esp+4]=ecx, [esp+8]=ebx, [esp+12]=eax,
+    ;         [esp+16]=int_num, [esp+20]=error_code, [esp+24]=eip...
+    mov eax, [esp + 16]     ; interrupt number
+    push eax                ; argumento para interrupt_handler(unsigned int)
     call interrupt_handler
+    add esp, 4              ; remove argumento
 
-    add esp, 4          ; descarta o ponteiro (não restaura ESP com pop)
-    pop eax
-    pop ebx
-    pop ecx
+    ; restaurar registradores
     pop edx
+    pop ecx
+    pop ebx
+    pop eax
 
-    add esp, 8          ; remove error_code e interrupt number da pilha
+    add esp, 8              ; remove error_code e interrupt number da pilha
     iret
 
 ; interrupções sem error code

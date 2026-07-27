@@ -34,9 +34,7 @@ struct idt_ptr {
 } __attribute__((packed));
 
 /* Chamada pelo common_interrupt_handler em interrupt_handlers.s */
-void interrupt_handler(struct cpu_state cpu,
-                       struct stack_state stack,
-                       unsigned int interrupt);
+void interrupt_handler(unsigned int interrupt);
 
 /* Monta a IDT e a carrega no processador */
 void idt_init(void);

@@ -43,15 +43,13 @@ static void idt_set_entry(int n, void (*handler)(void))
     idt[n].offset_high = (addr >> 16) & 0x0000FFFF;
 }
 
-/* ── Handler chamado por todos os interrupt_handler_N via common_interrupt_handler ── */
-void interrupt_handler(struct cpu_state cpu,
-                       struct stack_state stack,
-                       unsigned int interrupt)
+/** interrupt_handler:
+ *  Chamado pelo common_interrupt_handler (interrupt_handlers.s).
+ *  Recebe o número da interrupção como argumento direto.
+ */
+void interrupt_handler(unsigned int interrupt)
 {
-    (void)cpu;
-    (void)stack;
-
-    if (interrupt == 33) {        /* IRQ1 = teclado, remapeado para 0x21 */
+    if (interrupt == 33) {        /* IRQ1 = teclado */
         keyboard_handler();
     }
 
