@@ -6,8 +6,8 @@
 #define FB_HEIGHT 25
 #define FB_SIZE   (FB_WIDTH * FB_HEIGHT)
 
-/* Endereço base da memória de vídeo em modo texto */
-char *fb = (char *) 0x000B8000;
+/* Endereço base da memória de vídeo em modo texto na metade superior */
+char *fb = (char *) 0xC00B8000;
 
 /* Portas de comando e dados do framebuffer */
 #define FB_COMMAND_PORT 0x3D4

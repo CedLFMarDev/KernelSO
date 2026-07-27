@@ -1,6 +1,10 @@
 #ifndef INCLUDE_PAGING_H
 #define INCLUDE_PAGING_H
 
+/* Endereço Virtual Base da Metade Superior (3 GB) */
+#define KERNEL_VIRTUAL_BASE  0xC0000000
+#define KERNEL_PDE_INDEX     (KERNEL_VIRTUAL_BASE >> 22) /* Índice 768 */
+
 /* Flags para Entradas do Page Directory (4 MB Pages - PSE) */
 #define PAGING_PRESENT       0x01  /* Bit 0: Página presente na memória */
 #define PAGING_READ_WRITE    0x02  /* Bit 1: 1 = Leitura/Escrita, 0 = Somente Leitura */
@@ -18,9 +22,9 @@
 
 /**
  * paging_enable:
- * Função em assembly (paging_asm.s) que habilita a paginação na CPU.
+ * Função em assembly (paging_asm.s) que grava o CR3 e ativa PSE (CR4) e PG (CR0).
  * 
- * @param page_directory_phys_addr Endereço físico do Page Directory
+ * @param page_directory_phys_addr Endereço FÍSICO do Page Directory
  */
 void paging_enable(unsigned int page_directory_phys_addr);
 
@@ -34,8 +38,9 @@ void tlb_flush_single(unsigned int vaddr);
 
 /**
  * paging_init:
- * Inicializa o Page Directory com Mapeamento de Identidade (1:1) de 0 a 4GB
- * e ativa a paginação na CPU.
+ * Inicializa o Page Directory definitivo no C para o Higher-Half Kernel (0xC0000000),
+ * desmapeia o endereço 0x0 (reservando a memória inferior para Modo Usuário)
+ * e recarrega o CR3.
  */
 void paging_init(void);
 
