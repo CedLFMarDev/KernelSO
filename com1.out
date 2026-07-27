@@ -2,5 +2,30 @@
 Tela limpa
 Welcome to KernelSO!
 Kernel v1.0 - x86 i386
-Running...
-=== Kernel em execução ===
+--- Limites de Memoria do Kernel (Linker) ---
+kernel_virtual_start : 0xC0100000
+kernel_virtual_end   : 0xC0128014
+kernel_physical_start: 0x00100000
+kernel_physical_end  : 0x00128014
+--- Memoria RAM Detectada via Multiboot ---
+Memoria Baixa (0-640KB) : 639 KB
+Memoria Alta (>1MB)     : 129920 KB
+Memoria Total           : 127 MB (130559 KB)
+--- Physical Memory Manager (PMM) ---
+Quadros livres (4KB)    : 32342
+Quadro fisico alocado   : 0x00129000
+Quadro fisico liberado com sucesso.
+=== Kernel inicializando paginacao ===
+=== Paginacao habilitada ===
+--- Kernel Heap Inicializado (0xC0200000) ---
+Chamando kmalloc(64)...
+kmalloc(64) retornou.
+Chamando kmalloc(40)...
+kmalloc(40) retornou.
+kmalloc(64)  endereco : 0xC021FFC0
+kmalloc(40)  endereco : 0xC021FF90
+Dados no Heap validados : arr[0]=42, arr[9]=999 OK
+kfree() executado com sucesso.
+=== Kernel inicializando interrupcoes ===
+=== Interrupcoes habilitadas ===
+=== Teclado pronto — aguardando entrada ===

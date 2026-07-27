@@ -1,9 +1,11 @@
+#include "heap.h"
 #include "interrupt.h"
 #include "io.h"
 #include "keyboard.h"
 #include "multiboot.h"
 #include "paging.h"
 #include "pic.h"
+#include "pmm.h"
 #include <stddef.h>
 
 /* Declarações das funções de framebuffer e serial */
@@ -41,7 +43,7 @@ extern void kernel_physical_end(void);
 #define FB_COLOR_YELLOW 0x0E
 #define FB_COLOR_WHITE 0x0F
 
-/* Utilitários para formatação de strings sem dep de libc */
+/* Utilitários para formatação de strings sem dependência de libc */
 static void int_to_hex(unsigned int n, char *buf) {
     const char *hex_digits = "0123456789ABCDEF";
     buf[0] = '0';
@@ -151,11 +153,63 @@ int kmain(unsigned int ebx) {
       int_to_dec(total_mem_kb, buf);
       serial_write_no_limit(buf);
       serial_write_no_limit(" KB)\n");
+
+      /* 1. Inicializar o Physical Memory Manager (PMM Bitmap) */
+      pmm_init(total_mem_kb, p_end);
+      serial_write_no_limit("--- Physical Memory Manager (PMM) ---\n");
+      serial_write_no_limit("Quadros livres (4KB)    : ");
+      int_to_dec(pmm_get_free_frame_count(), buf);
+      serial_write_no_limit(buf);
+      serial_write_no_limit("\n");
+
+      /* Teste de alocação de quadro físico no PMM */
+      unsigned int test_frame = pmm_alloc_frame();
+      serial_write_no_limit("Quadro fisico alocado   : ");
+      int_to_hex(test_frame, buf);
+      serial_write_no_limit(buf);
+      serial_write_no_limit("\n");
+      pmm_free_frame(test_frame);
+      serial_write_no_limit("Quadro fisico liberado com sucesso.\n");
   }
 
+  /* 2. Inicializar a Paginação definitiva no C (mapeia 0xC0000000 a 0xFFFFFFFF) */
   serial_write_no_limit("=== Kernel inicializando paginacao ===\n");
   paging_init();
   serial_write_no_limit("=== Paginacao habilitada ===\n");
+
+  /* 3. Inicializar o Kernel Heap (kmalloc / kfree) no espaço virtual 0xC0200000+ */
+  heap_init();
+  serial_write_no_limit("--- Kernel Heap Inicializado (0xC0200000) ---\n");
+
+  /* Teste de alocação dinâmica com kmalloc e kfree */
+  serial_write_no_limit("Chamando kmalloc(64)...\n");
+  char *str = (char *)kmalloc(64);
+  serial_write_no_limit("kmalloc(64) retornou.\n");
+
+  serial_write_no_limit("Chamando kmalloc(40)...\n");
+  int *arr = (int *)kmalloc(10 * sizeof(int));
+  serial_write_no_limit("kmalloc(40) retornou.\n");
+
+  if (str && arr) {
+      serial_write_no_limit("kmalloc(64)  endereco : ");
+      int_to_hex((unsigned int)str, buf);
+      serial_write_no_limit(buf);
+      serial_write_no_limit("\n");
+
+      serial_write_no_limit("kmalloc(40)  endereco : ");
+      int_to_hex((unsigned int)arr, buf);
+      serial_write_no_limit(buf);
+      serial_write_no_limit("\n");
+
+      /* Teste de escrita e leitura nos blocos alocados */
+      arr[0] = 42;
+      arr[9] = 999;
+      serial_write_no_limit("Dados no Heap validados : arr[0]=42, arr[9]=999 OK\n");
+
+      kfree(str);
+      kfree(arr);
+      serial_write_no_limit("kfree() executado com sucesso.\n");
+  }
 
   serial_write_no_limit("=== Kernel inicializando interrupcoes ===\n");
 

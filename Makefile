@@ -10,8 +10,8 @@ CFLAGS = -ffreestanding -fno-builtin -Wall -Wextra -O2 -g -fno-stack-protector
 ASFLAGS = -f elf32
 LDFLAGS = -T link.ld -melf_i386
 
-# Arquivos de origem - ATUALIZADO: Capítulo 9 (Paging)
-C_SOURCES = kmain.c interrupt.c pic.c keyboard.c framebuffer.c serial.c paging.c
+# Arquivos de origem - ATUALIZADO: Capítulo 10 (PMM e Heap)
+C_SOURCES = kmain.c interrupt.c pic.c keyboard.c framebuffer.c serial.c paging.c pmm.c heap.c
 ASM_SOURCES = loader.s io.s interrupt_handlers.s program.s paging_asm.s
 C_OBJECTS = $(C_SOURCES:.c=.o)
 ASM_OBJECTS = $(ASM_SOURCES:.s=.o)
