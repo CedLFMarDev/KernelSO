@@ -17,11 +17,10 @@ align 4
     dd CHECKSUM                 ; checksum
 
 loader:
-    ; Quando o GRUB transfere o controle para loader, a paginação está DESATIVADA.
-    ; O código executa na faixa de endereço físico 0x00100000, mas os rótulos foram
-    ; linkados no endereço virtual 0xC0100000+.
-    ; Portanto, para acessar estruturas ANTES de ativar a paginação,
-    ; subtraímos KERNEL_VIRTUAL_BASE (0xC0000000) do endereço do símbolo.
+    ; Quando o GRUB transfere o controle para loader:
+    ; EAX contém o magic number 0x2BADB002
+    ; EBX contém o endereço FÍSICO da estrutura multiboot_info_t.
+    ; ATENÇÃO: EBX NÃO PODE SER SOBRESCRITO durante a inicialização!
 
     ; 1. Obter o endereço FÍSICO do Page Directory temporário (boot_page_directory)
     mov eax, (boot_page_directory - KERNEL_VIRTUAL_BASE)
@@ -37,20 +36,20 @@ loader:
     ; 3. Carregar o CR3 com o endereço FÍSICO do boot_page_directory
     mov cr3, eax
 
-    ; 4. Habilitar o bit PSE (Page Size Extensions, bit 4) em CR4
-    mov ebx, cr4
-    or  ebx, 0x00000010
-    mov cr4, ebx
+    ; 4. Habilitar o bit PSE (Page Size Extensions, bit 4) em CR4 (usando ECX para não sobrescrever EBX)
+    mov ecx, cr4
+    or  ecx, 0x00000010
+    mov cr4, ecx
 
-    ; 5. Habilitar o bit PG (Paging Enable, bit 31) em CR0
-    mov ebx, cr0
-    or  ebx, 0x80000000
-    mov cr0, ebx
+    ; 5. Habilitar o bit PG (Paging Enable, bit 31) em CR0 (usando ECX para não sobrescrever EBX)
+    mov ecx, cr0
+    or  ecx, 0x80000000
+    mov cr0, ecx
 
     ; 6. Agora a paginação está ATIVADA!
     ; Realiza um salto indireto para a metade superior (virtual >= 0xC0100000)
-    lea ebx, [higher_half]
-    jmp ebx
+    lea ecx, [higher_half]
+    jmp ecx
 
 higher_half:
     ; A partir deste momento, EIP está no endereço virtual superior (>= 0xC0100000)
@@ -58,7 +57,7 @@ higher_half:
     ; Configura a pilha do kernel no endereço virtual
     mov esp, kernel_stack_top
 
-    ; Passa o ponteiro multiboot (passado pelo GRUB em EBX) como parâmetro para kmain
+    ; Passa o ponteiro multiboot (preservado em EBX) como parâmetro para kmain
     push ebx
 
     ; Chama a função kmain no endereço virtual superior

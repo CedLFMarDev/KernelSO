@@ -17,6 +17,12 @@ extern void serial_init(void);
 extern void serial_write(const char *str, size_t max_len);
 extern void serial_write_no_limit(const char *str);
 
+/* Símbolos exportados pelo script de linkagem (link.ld) */
+extern void kernel_virtual_start(void);
+extern void kernel_virtual_end(void);
+extern void kernel_physical_start(void);
+extern void kernel_physical_end(void);
+
 /* Definições de cores */
 #define FB_COLOR_BLACK 0x00
 #define FB_COLOR_BLUE 0x01
@@ -35,7 +41,35 @@ extern void serial_write_no_limit(const char *str);
 #define FB_COLOR_YELLOW 0x0E
 #define FB_COLOR_WHITE 0x0F
 
-typedef void (*call_module_t)(void);
+/* Utilitários para formatação de strings sem dep de libc */
+static void int_to_hex(unsigned int n, char *buf) {
+    const char *hex_digits = "0123456789ABCDEF";
+    buf[0] = '0';
+    buf[1] = 'x';
+    for (int i = 7; i >= 0; i--) {
+        buf[2 + (7 - i)] = hex_digits[(n >> (i * 4)) & 0x0F];
+    }
+    buf[10] = '\0';
+}
+
+static void int_to_dec(unsigned int n, char *buf) {
+    if (n == 0) {
+        buf[0] = '0';
+        buf[1] = '\0';
+        return;
+    }
+    char temp[12];
+    int i = 0;
+    while (n > 0) {
+        temp[i++] = '0' + (n % 10);
+        n /= 10;
+    }
+    int j = 0;
+    while (i > 0) {
+        buf[j++] = temp[--i];
+    }
+    buf[j] = '\0';
+}
 
 /** kmain:
  *  Ponto de entrada principal do kernel.
@@ -63,11 +97,61 @@ int kmain(unsigned int ebx) {
   serial_write(info, 23);
   serial_write_no_limit("\n");
 
-  /* Mensagem de status */
-  const char *status = "Running...";
-  fb_write_at(status, 10, 160, FB_COLOR_WHITE, FB_COLOR_BLUE);
-  serial_write(status, 10);
+  /* Obter e exibir limites do kernel a partir dos símbolos do linker */
+  unsigned int v_start = (unsigned int)&kernel_virtual_start;
+  unsigned int v_end   = (unsigned int)&kernel_virtual_end;
+  unsigned int p_start = (unsigned int)&kernel_physical_start;
+  unsigned int p_end   = (unsigned int)&kernel_physical_end;
+
+  char buf[32];
+  serial_write_no_limit("--- Limites de Memoria do Kernel (Linker) ---\n");
+  
+  serial_write_no_limit("kernel_virtual_start : ");
+  int_to_hex(v_start, buf);
+  serial_write_no_limit(buf);
   serial_write_no_limit("\n");
+
+  serial_write_no_limit("kernel_virtual_end   : ");
+  int_to_hex(v_end, buf);
+  serial_write_no_limit(buf);
+  serial_write_no_limit("\n");
+
+  serial_write_no_limit("kernel_physical_start: ");
+  int_to_hex(p_start, buf);
+  serial_write_no_limit(buf);
+  serial_write_no_limit("\n");
+
+  serial_write_no_limit("kernel_physical_end  : ");
+  int_to_hex(p_end, buf);
+  serial_write_no_limit(buf);
+  serial_write_no_limit("\n");
+
+  /* Obter e exibir informações de memória RAM via Multiboot */
+  multiboot_info_t *mbinfo = (multiboot_info_t *)(ebx + 0xC0000000);
+
+  if (mbinfo->flags & MULTIBOOT_FLAG_MEM) {
+      unsigned int total_mem_kb = mbinfo->mem_lower + mbinfo->mem_upper;
+      unsigned int total_mem_mb = total_mem_kb / 1024;
+      
+      serial_write_no_limit("--- Memoria RAM Detectada via Multiboot ---\n");
+      serial_write_no_limit("Memoria Baixa (0-640KB) : ");
+      int_to_dec(mbinfo->mem_lower, buf);
+      serial_write_no_limit(buf);
+      serial_write_no_limit(" KB\n");
+
+      serial_write_no_limit("Memoria Alta (>1MB)     : ");
+      int_to_dec(mbinfo->mem_upper, buf);
+      serial_write_no_limit(buf);
+      serial_write_no_limit(" KB\n");
+
+      serial_write_no_limit("Memoria Total           : ");
+      int_to_dec(total_mem_mb, buf);
+      serial_write_no_limit(buf);
+      serial_write_no_limit(" MB (");
+      int_to_dec(total_mem_kb, buf);
+      serial_write_no_limit(buf);
+      serial_write_no_limit(" KB)\n");
+  }
 
   serial_write_no_limit("=== Kernel inicializando paginacao ===\n");
   paging_init();

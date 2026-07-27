@@ -3,6 +3,9 @@ ENTRY(loader)                /* o nome do rótulo (label) de entrada */
 SECTIONS {
     . = 0xC0100000;          /* realocação para a metade superior (3 GB + 1 MB) */
 
+    kernel_virtual_start = .;
+    kernel_physical_start = . - 0xC0000000;
+
     .text ALIGN (0x1000) : AT(ADDR(.text) - 0xC0000000)
     {
         *(.text)             /* todas as seções de texto de todos os arquivos */
@@ -23,4 +26,7 @@ SECTIONS {
         *(COMMON)            /* todas as seções COMMON de todos os arquivos */
         *(.bss)              /* todas as seções bss de todos os arquivos */
     }
+
+    kernel_virtual_end = .;
+    kernel_physical_end = . - 0xC0000000;
 }
