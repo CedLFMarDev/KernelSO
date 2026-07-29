@@ -1,3 +1,4 @@
+#include "gdt.h"
 #include "heap.h"
 #include "interrupt.h"
 #include "io.h"
@@ -219,11 +220,16 @@ int kmain(unsigned int ebx) {
       serial_write_no_limit("kfree() executado com sucesso.\n");
   }
 
-  serial_write_no_limit("=== Kernel inicializando interrupcoes ===\n");
+  serial_write_no_limit("=== Kernel inicializando GDT e interrupcoes ===\n");
+
+  /* Inicialização da GDT em memória virtual superior (0xC01xxxxx) */
+  gdt_install();
+  serial_write_no_limit("=== GDT inicializada ===\n");
 
   /* Inicializações de interrupção — fora do loop, executadas uma única vez */
   pic_init();              /* remapeia o PIC antes de configurar a IDT */
   idt_init();              /* monta e carrega a IDT */
+  keyboard_init();         /* inicializa o controlador PS/2 de teclado (8042) */
   __asm__ volatile("sti"); /* habilita interrupções */
 
   serial_write_no_limit("=== Interrupcoes habilitadas ===\n");
@@ -237,10 +243,10 @@ int kmain(unsigned int ebx) {
   }
   /* Prompt para o usuário digitar */
   const char *prompt = "> Digite algo: ";
-  fb_write_at(prompt, 15, 320, FB_COLOR_YELLOW, FB_COLOR_MAGENTA);
+  fb_write_at(prompt, 16, 320, FB_COLOR_YELLOW, FB_COLOR_MAGENTA);
 
-  /* Posiciona o cursor de digitação logo após o prompt (linha 4, col 15) */
-  keyboard_set_cursor(320 + 15);
+  /* Posiciona o cursor de digitação logo após o prompt (linha 4, col 16) */
+  keyboard_set_cursor(320 + 16);
 
   serial_write_no_limit("=== Teclado pronto — aguardando entrada ===\n");
 

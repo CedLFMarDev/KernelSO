@@ -11,8 +11,8 @@ ASFLAGS = -f elf32
 LDFLAGS = -T link.ld -melf_i386
 
 # Arquivos de origem - ATUALIZADO: Capítulo 10 (PMM e Heap)
-C_SOURCES = kmain.c interrupt.c pic.c keyboard.c framebuffer.c serial.c paging.c pmm.c heap.c
-ASM_SOURCES = loader.s io.s interrupt_handlers.s program.s paging_asm.s
+C_SOURCES = kmain.c gdt.c interrupt.c pic.c keyboard.c framebuffer.c serial.c paging.c pmm.c heap.c fs.c
+ASM_SOURCES = loader.s io.s gdt_asm.s interrupt_handlers.s program.s paging_asm.s
 C_OBJECTS = $(C_SOURCES:.c=.o)
 ASM_OBJECTS = $(ASM_SOURCES:.s=.o)
 OBJECTS = $(ASM_OBJECTS) $(C_OBJECTS)
@@ -57,10 +57,15 @@ iso: $(KERNEL)
 build: check-tools
 	$(MAKE) -j4 $(KERNEL)
 
-# Executar o kernel no QEMU com o módulo program.o
+# Executar o kernel no QEMU com janela gráfica (teclado PS/2 funciona na janela)
 run: $(KERNEL) program.o
-	@echo "🚀 Iniciando QEMU..."
-	qemu-system-i386 -kernel $(KERNEL) -initrd program.o -serial stdio
+	@echo "🚀 Iniciando QEMU (digite na janela gráfica)..."
+	qemu-system-i386 -kernel $(KERNEL) -initrd program.o -display gtk
+
+# Executar com serial no terminal E janela gráfica para teclado
+run-debug: $(KERNEL) program.o
+	@echo "🚀 Iniciando QEMU com serial+teclado..."
+	qemu-system-i386 -kernel $(KERNEL) -initrd program.o -serial stdio -display gtk
 
 # Executar a partir da ISO
 run-iso: iso
@@ -90,4 +95,4 @@ info:
 	@echo "make distclean: Remove tudo incluindo ISO"
 	@echo "make check-tools: Verifica se as ferramentas estão instaladas"
 
-.PHONY: all build iso run run-iso clean distclean info check-tools
+.PHONY: all build iso run run-debug run-iso clean distclean info check-tools
