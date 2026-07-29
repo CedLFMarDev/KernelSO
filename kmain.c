@@ -6,7 +6,15 @@
 #include "paging.h"
 #include "pic.h"
 #include "pmm.h"
+#include "fs.h"
 #include <stddef.h>
+
+struct multiboot_module {
+    unsigned int mod_start;
+    unsigned int mod_end;
+    unsigned int cmdline;
+    unsigned int reserved;
+} __attribute__((packed));
 
 /* Declarações das funções de framebuffer e serial */
 extern void fb_clear(unsigned char fg, unsigned char bg);
@@ -220,6 +228,13 @@ int kmain(unsigned int ebx) {
 
   serial_write_no_limit("=== Interrupcoes habilitadas ===\n");
 
+  if (mbinfo->mods_count >= 2) {
+      struct multiboot_module *mods = (struct multiboot_module *) mbinfo->mods_addr;
+      fs_init(mods[1].mod_start);
+      serial_write_no_limit("Filesystem inicializado\n");
+  } else {
+      serial_write_no_limit("AVISO: modulo de filesystem nao encontrado\n");
+  }
   /* Prompt para o usuário digitar */
   const char *prompt = "> Digite algo: ";
   fb_write_at(prompt, 15, 320, FB_COLOR_YELLOW, FB_COLOR_MAGENTA);
